@@ -1,4 +1,5 @@
-<section class="light" id="about">
+@using Syncfusion.Blazor
+@* <section class="light" id="about">
     @if (hero is not null)
     {
         <img class="background" src="@(hero.Src)" alt="@(hero.Alt)" />
@@ -23,7 +24,40 @@
         <p style="padding: 1rem 3rem 0;">@aboutMe.DetailOrQuote</p>
     }
     </div>
-</section>
+</section> *@
+
+
+<SfMediaQuery @bind-ActiveBreakpoint="activeBreakpoint"></SfMediaQuery>
+ 
+
+<section class="light" id="about">
+    @if (hero is not null)
+    {
+        <img class="background" src="@(hero.Src)" alt="@(hero.Alt)" />
+    }
+    <h2>About Myself</h2>
+    <div style="background-color: white; width: @(GetWidth()); padding: 4rem; margin: 3rem auto; text-align: center;">
+        @if (aboutMe is null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <p class="large">@aboutMe.Description</p>
+            <hr />
+            <ul style=" columns: @(GetColumns()); font-size: @(GetFontSize()); margin: 2rem 3rem; gap: 3rem;">
+                @foreach (var skill in aboutMe.Skills)
+                {
+
+                    <li key="@skill" style="text-align: center; display: inline-block; width: 100%;">@skill</li>
+                }
+            </ul>
+            <hr />
+            <p style="padding: 1rem 3rem 0;">@aboutMe.DetailOrQuote</p>
+        }
+    </div>
+</section> 
+
 
 @code {
     [Parameter, EditorRequired]
@@ -40,5 +74,37 @@
         aboutMe = await Http.GetFromJsonAsync<AboutMe>("sample-data/aboutme.json");
         hero = await HeroImageService.GetHeroAsync(img => img.Name is "about");
 
+    }
+
+    private string activeBreakpoint { get; set; }
+
+    private string GetWidth()
+    {
+        return activeBreakpoint switch
+        {
+            "Large" => "50%",
+            "Medium" => "70%",
+            _ => "90%"
+        };
+    }
+
+    private int GetColumns()
+    {
+        return activeBreakpoint switch
+        {
+            "Large" => 2,
+            "Medium" => 1,
+            _ => 1
+        };
+    }
+
+    private string GetFontSize()
+    {
+        return activeBreakpoint switch
+        {
+            "Large" => "1.25rem",
+            "Medium" => "1rem",
+            _ => "0.875rem"
+        };
     }
 }
